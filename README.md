@@ -21,9 +21,4 @@ Note that Exomizer stores the original start-address inside the data, so it will
 
 - The included make.bat assumes ca65 toolchain in '..'
 - `ifexodecrunch.s` is the decrunch routine at `$0810`
-- `exodecrunch.s` is the original 3.0.2 decruncher]
-
-### TODO
-
-- relocate decrunch_table somewhere else instead of directly after the decruncher
-
+- `exodecrunch.s` is the original 3.0.2 decruncher with `decruncher_table` set to `$0334` 

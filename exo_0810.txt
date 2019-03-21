@@ -1,0 +1,172 @@
+; da65 V2.17 - Git 2617e9a
+; Created:    2019-03-21 19:31:59
+; Input file: exo_0810.bin
+; Page:       1
+
+
+        .setcpu "6502"
+
+; ----------------------------------------------------------------------------
+; ----------------------------------------------------------------------------
+        stx     L0825                           ; 0810 8E 25 08
+        sty     L0826                           ; 0813 8C 26 08
+        jmp     L0845                           ; 0816 4C 45 08
+
+; ----------------------------------------------------------------------------
+L0819:  lda     L0825                           ; 0819 AD 25 08
+        bne     L0821                           ; 081C D0 03
+        dec     L0826                           ; 081E CE 26 08
+L0821:  dec     L0825                           ; 0821 CE 25 08
+        .byte   $AD                             ; 0824 AD
+L0825:  .byte   $FF                             ; 0825 FF
+L0826:  .byte   $FF                             ; 0826 FF
+        rts                                     ; 0827 60
+
+; ----------------------------------------------------------------------------
+L0828:  adc     #$80                            ; 0828 69 80
+        asl     a                               ; 082A 0A
+        bpl     L083C                           ; 082B 10 0F
+L082D:  asl     $FD                             ; 082D 06 FD
+        bne     L0839                           ; 082F D0 08
+        pha                                     ; 0831 48
+        jsr     L0819                           ; 0832 20 19 08
+        rol     a                               ; 0835 2A
+        sta     $FD                             ; 0836 85 FD
+        pla                                     ; 0838 68
+L0839:  rol     a                               ; 0839 2A
+        bmi     L082D                           ; 083A 30 F1
+L083C:  bvs     L083F                           ; 083C 70 01
+        rts                                     ; 083E 60
+
+; ----------------------------------------------------------------------------
+L083F:  sec                                     ; 083F 38
+        sta     $FC                             ; 0840 85 FC
+        jmp     L0819                           ; 0842 4C 19 08
+
+; ----------------------------------------------------------------------------
+L0845:  ldy     #$00                            ; 0845 A0 00
+        ldx     #$03                            ; 0847 A2 03
+L0849:  jsr     L0819                           ; 0849 20 19 08
+        sta     $FC,x                           ; 084C 95 FC
+        dex                                     ; 084E CA
+        bne     L0849                           ; 084F D0 F8
+        clc                                     ; 0851 18
+L0852:  tax                                     ; 0852 AA
+        tya                                     ; 0853 98
+        and     #$0F                            ; 0854 29 0F
+        sta     $0368,y                         ; 0856 99 68 03
+        beq     L0867                           ; 0859 F0 0C
+        txa                                     ; 085B 8A
+        adc     $0367,y                         ; 085C 79 67 03
+        sta     $0368,y                         ; 085F 99 68 03
+        lda     $A8                             ; 0862 A5 A8
+        adc     $039B,y                         ; 0864 79 9B 03
+L0867:  sta     $039C,y                         ; 0867 99 9C 03
+        lda     #$01                            ; 086A A9 01
+        sta     $A8                             ; 086C 85 A8
+        lda     #$78                            ; 086E A9 78
+        jsr     L0828                           ; 0870 20 28 08
+        lsr     a                               ; 0873 4A
+        tax                                     ; 0874 AA
+        beq     L0880                           ; 0875 F0 09
+        php                                     ; 0877 08
+L0878:  asl     $A8                             ; 0878 06 A8
+        sec                                     ; 087A 38
+        ror     a                               ; 087B 6A
+        dex                                     ; 087C CA
+        bne     L0878                           ; 087D D0 F9
+        plp                                     ; 087F 28
+L0880:  ror     a                               ; 0880 6A
+        sta     $0334,y                         ; 0881 99 34 03
+        bmi     L088B                           ; 0884 30 05
+        lda     $A8                             ; 0886 A5 A8
+        stx     $A8                             ; 0888 86 A8
+        .byte   $24                             ; 088A 24
+L088B:  txa                                     ; 088B 8A
+        iny                                     ; 088C C8
+        cpy     #$34                            ; 088D C0 34
+        bne     L0852                           ; 088F D0 C1
+        ldy     $FE                             ; 0891 A4 FE
+        stx     $FE                             ; 0893 86 FE
+        stx     $FC                             ; 0895 86 FC
+L0897:  tya                                     ; 0897 98
+        bne     L089C                           ; 0898 D0 02
+        dec     $FF                             ; 089A C6 FF
+L089C:  dey                                     ; 089C 88
+        jsr     L0819                           ; 089D 20 19 08
+        sta     ($FE),y                         ; 08A0 91 FE
+L08A2:  dex                                     ; 08A2 CA
+        lda     $FD                             ; 08A3 A5 FD
+L08A5:  asl     a                               ; 08A5 0A
+        bne     L08AC                           ; 08A6 D0 04
+        jsr     L0819                           ; 08A8 20 19 08
+        rol     a                               ; 08AB 2A
+L08AC:  inx                                     ; 08AC E8
+        bcc     L08A5                           ; 08AD 90 F6
+        sta     $FD                             ; 08AF 85 FD
+        beq     L0897                           ; 08B1 F0 E4
+        cpx     #$11                            ; 08B3 E0 11
+        bcs     L091F                           ; 08B5 B0 68
+        lda     $0333,x                         ; 08B7 BD 33 03
+        jsr     L0828                           ; 08BA 20 28 08
+        adc     $0367,x                         ; 08BD 7D 67 03
+        sta     $A7                             ; 08C0 85 A7
+        lda     $FC                             ; 08C2 A5 FC
+        adc     $039B,x                         ; 08C4 7D 9B 03
+        sta     $A8                             ; 08C7 85 A8
+        ldx     $A7                             ; 08C9 A6 A7
+        lda     #$E1                            ; 08CB A9 E1
+        cpx     #$03                            ; 08CD E0 03
+        bcs     L08D4                           ; 08CF B0 03
+        lda     L092C,x                         ; 08D1 BD 2C 09
+L08D4:  asl     $FD                             ; 08D4 06 FD
+        bne     L08E0                           ; 08D6 D0 08
+        tax                                     ; 08D8 AA
+        jsr     L0819                           ; 08D9 20 19 08
+        rol     a                               ; 08DC 2A
+        sta     $FD                             ; 08DD 85 FD
+        txa                                     ; 08DF 8A
+L08E0:  rol     a                               ; 08E0 2A
+        bcs     L08D4                           ; 08E1 B0 F1
+        tax                                     ; 08E3 AA
+        lda     #$00                            ; 08E4 A9 00
+        sta     $FC                             ; 08E6 85 FC
+        lda     $0334,x                         ; 08E8 BD 34 03
+        jsr     L0828                           ; 08EB 20 28 08
+        adc     $0368,x                         ; 08EE 7D 68 03
+        sta     $AE                             ; 08F1 85 AE
+        lda     $FC                             ; 08F3 A5 FC
+        adc     $039C,x                         ; 08F5 7D 9C 03
+        adc     $FF                             ; 08F8 65 FF
+        sta     $AF                             ; 08FA 85 AF
+        ldx     $A7                             ; 08FC A6 A7
+L08FE:  tya                                     ; 08FE 98
+        bne     L0905                           ; 08FF D0 04
+        dec     $FF                             ; 0901 C6 FF
+        dec     $AF                             ; 0903 C6 AF
+L0905:  dey                                     ; 0905 88
+        bcs     L091A                           ; 0906 B0 12
+        lda     ($AE),y                         ; 0908 B1 AE
+L090A:  sta     ($FE),y                         ; 090A 91 FE
+        dex                                     ; 090C CA
+        bne     L08FE                           ; 090D D0 EF
+        lda     $A8                             ; 090F A5 A8
+        stx     $FC                             ; 0911 86 FC
+        beq     L08A2                           ; 0913 F0 8D
+        dec     $A8                             ; 0915 C6 A8
+        jmp     L08FE                           ; 0917 4C FE 08
+
+; ----------------------------------------------------------------------------
+L091A:  jsr     L0819                           ; 091A 20 19 08
+        bcs     L090A                           ; 091D B0 EB
+L091F:  beq     L092C                           ; 091F F0 0B
+        jsr     L0819                           ; 0921 20 19 08
+        sta     $A8                             ; 0924 85 A8
+        jsr     L0819                           ; 0926 20 19 08
+        tax                                     ; 0929 AA
+        bcs     L08FE                           ; 092A B0 D2
+L092C:  rts                                     ; 092C 60
+
+; ----------------------------------------------------------------------------
+        .byte   $8C                             ; 092D 8C
+        .byte   $E2                             ; 092E E2

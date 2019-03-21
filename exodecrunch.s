@@ -388,6 +388,7 @@ tabl_bit:
 ; end of decruncher
 ; -------------------------------------------------------------------
 
+.IFDEF DECRUNCH_TABLE
 ; -------------------------------------------------------------------
 ; this 156 (204) byte table area may be relocated. It may also be
 ; clobbered by other data between decrunches.
@@ -408,6 +409,9 @@ decrunch_table:
         .byte 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
         .byte 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
         .byte 0,0,0,0,0,0,0,0,0,0,0,0
+.ELSE
+decrunch_table = $0334 ; Same as SFX
+.ENDIF ; DECRUNCH_TABLE
 ; -------------------------------------------------------------------
 ; end of decruncher
 ; -------------------------------------------------------------------
