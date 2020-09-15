@@ -12,10 +12,13 @@ Include the `exo_0810.bin` binary at `$0810` in your assembly code directly afte
     !binary 'exo_0810.bin'
 
     * = $1000
-    stx #<endaddr
-    sty #>endaddr
+    ldx #<endaddr
+    ldy #>endaddr
     jsr $0810
     ...
+
+    !binary 'exomized.data.bin'
+    endaddr:
 
 Note that Exomizer stores the original start-address inside the data, so it will always be decrunched to the same address.
 
