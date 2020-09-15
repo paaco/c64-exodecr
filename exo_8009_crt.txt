@@ -1,0 +1,175 @@
+; da65 V2.17 - Git 2617e9a
+; Created:    2020-09-15 21:48:34
+; Input file: exo_8009_crt.bin
+; Page:       1
+
+
+        .setcpu "6502"
+
+; ----------------------------------------------------------------------------
+L0050           := $0050
+; ----------------------------------------------------------------------------
+        stx     $59                             ; 8009 86 59
+        sty     $5A                             ; 800B 84 5A
+        ldx     #$60                            ; 800D A2 60
+        stx     $5B                             ; 800F 86 5B
+        ldx     #$08                            ; 8011 A2 08
+L8013:  ldy     L801E,x                         ; 8013 BC 1E 80
+        sty     L0050,x                         ; 8016 94 50
+        dex                                     ; 8018 CA
+        bpl     L8013                           ; 8019 10 F8
+        jmp     L8044                           ; 801B 4C 44 80
+
+; ----------------------------------------------------------------------------
+L801E:  lda     $59                             ; 801E A5 59
+        bne     L8024                           ; 8020 D0 02
+        dec     $5A                             ; 8022 C6 5A
+L8024:  dec     $59                             ; 8024 C6 59
+        .byte   $AD                             ; 8026 AD
+L8027:  adc     #$80                            ; 8027 69 80
+        asl     a                               ; 8029 0A
+        bpl     L803B                           ; 802A 10 0F
+L802C:  asl     $FD                             ; 802C 06 FD
+        bne     L8038                           ; 802E D0 08
+        pha                                     ; 8030 48
+        jsr     L0050                           ; 8031 20 50 00
+        rol     a                               ; 8034 2A
+        sta     $FD                             ; 8035 85 FD
+        pla                                     ; 8037 68
+L8038:  rol     a                               ; 8038 2A
+        bmi     L802C                           ; 8039 30 F1
+L803B:  bvs     L803E                           ; 803B 70 01
+        rts                                     ; 803D 60
+
+; ----------------------------------------------------------------------------
+L803E:  sec                                     ; 803E 38
+        sta     $FC                             ; 803F 85 FC
+        jmp     L0050                           ; 8041 4C 50 00
+
+; ----------------------------------------------------------------------------
+L8044:  ldy     #$00                            ; 8044 A0 00
+        ldx     #$03                            ; 8046 A2 03
+L8048:  jsr     L0050                           ; 8048 20 50 00
+        sta     $FC,x                           ; 804B 95 FC
+        dex                                     ; 804D CA
+        bne     L8048                           ; 804E D0 F8
+        clc                                     ; 8050 18
+L8051:  tax                                     ; 8051 AA
+        tya                                     ; 8052 98
+        and     #$0F                            ; 8053 29 0F
+        sta     $0368,y                         ; 8055 99 68 03
+        beq     L8066                           ; 8058 F0 0C
+        txa                                     ; 805A 8A
+        adc     $0367,y                         ; 805B 79 67 03
+        sta     $0368,y                         ; 805E 99 68 03
+        lda     $A8                             ; 8061 A5 A8
+        adc     $039B,y                         ; 8063 79 9B 03
+L8066:  sta     $039C,y                         ; 8066 99 9C 03
+L8069:  lda     #$01                            ; 8069 A9 01
+        sta     $A8                             ; 806B 85 A8
+        lda     #$78                            ; 806D A9 78
+        jsr     L8027                           ; 806F 20 27 80
+        lsr     a                               ; 8072 4A
+        tax                                     ; 8073 AA
+        beq     L807F                           ; 8074 F0 09
+        php                                     ; 8076 08
+L8077:  asl     $A8                             ; 8077 06 A8
+        sec                                     ; 8079 38
+        ror     a                               ; 807A 6A
+        dex                                     ; 807B CA
+        bne     L8077                           ; 807C D0 F9
+        plp                                     ; 807E 28
+L807F:  ror     a                               ; 807F 6A
+        sta     $0334,y                         ; 8080 99 34 03
+        bmi     L808A                           ; 8083 30 05
+        lda     $A8                             ; 8085 A5 A8
+        stx     $A8                             ; 8087 86 A8
+        .byte   $24                             ; 8089 24
+L808A:  txa                                     ; 808A 8A
+        iny                                     ; 808B C8
+        cpy     #$34                            ; 808C C0 34
+        bne     L8051                           ; 808E D0 C1
+        ldy     $FE                             ; 8090 A4 FE
+        stx     $FE                             ; 8092 86 FE
+        stx     $FC                             ; 8094 86 FC
+L8096:  tya                                     ; 8096 98
+        bne     L809B                           ; 8097 D0 02
+        dec     $FF                             ; 8099 C6 FF
+L809B:  dey                                     ; 809B 88
+        jsr     L0050                           ; 809C 20 50 00
+        sta     ($FE),y                         ; 809F 91 FE
+L80A1:  dex                                     ; 80A1 CA
+        lda     $FD                             ; 80A2 A5 FD
+L80A4:  asl     a                               ; 80A4 0A
+        bne     L80AB                           ; 80A5 D0 04
+        jsr     L0050                           ; 80A7 20 50 00
+        rol     a                               ; 80AA 2A
+L80AB:  inx                                     ; 80AB E8
+        bcc     L80A4                           ; 80AC 90 F6
+        sta     $FD                             ; 80AE 85 FD
+        beq     L8096                           ; 80B0 F0 E4
+        cpx     #$11                            ; 80B2 E0 11
+        bcs     L811E                           ; 80B4 B0 68
+        lda     $0333,x                         ; 80B6 BD 33 03
+        jsr     L8027                           ; 80B9 20 27 80
+        adc     $0367,x                         ; 80BC 7D 67 03
+        sta     $A7                             ; 80BF 85 A7
+        lda     $FC                             ; 80C1 A5 FC
+        adc     $039B,x                         ; 80C3 7D 9B 03
+        sta     $A8                             ; 80C6 85 A8
+        ldx     $A7                             ; 80C8 A6 A7
+        lda     #$E1                            ; 80CA A9 E1
+        cpx     #$03                            ; 80CC E0 03
+        bcs     L80D3                           ; 80CE B0 03
+        lda     L812B,x                         ; 80D0 BD 2B 81
+L80D3:  asl     $FD                             ; 80D3 06 FD
+        bne     L80DF                           ; 80D5 D0 08
+        tax                                     ; 80D7 AA
+        jsr     L0050                           ; 80D8 20 50 00
+        rol     a                               ; 80DB 2A
+        sta     $FD                             ; 80DC 85 FD
+        txa                                     ; 80DE 8A
+L80DF:  rol     a                               ; 80DF 2A
+        bcs     L80D3                           ; 80E0 B0 F1
+        tax                                     ; 80E2 AA
+        lda     #$00                            ; 80E3 A9 00
+        sta     $FC                             ; 80E5 85 FC
+        lda     $0334,x                         ; 80E7 BD 34 03
+        jsr     L8027                           ; 80EA 20 27 80
+        adc     $0368,x                         ; 80ED 7D 68 03
+        sta     $AE                             ; 80F0 85 AE
+        lda     $FC                             ; 80F2 A5 FC
+        adc     $039C,x                         ; 80F4 7D 9C 03
+        adc     $FF                             ; 80F7 65 FF
+        sta     $AF                             ; 80F9 85 AF
+        ldx     $A7                             ; 80FB A6 A7
+L80FD:  tya                                     ; 80FD 98
+        bne     L8104                           ; 80FE D0 04
+        dec     $FF                             ; 8100 C6 FF
+        dec     $AF                             ; 8102 C6 AF
+L8104:  dey                                     ; 8104 88
+        bcs     L8119                           ; 8105 B0 12
+        lda     ($AE),y                         ; 8107 B1 AE
+L8109:  sta     ($FE),y                         ; 8109 91 FE
+        dex                                     ; 810B CA
+        bne     L80FD                           ; 810C D0 EF
+        lda     $A8                             ; 810E A5 A8
+        stx     $FC                             ; 8110 86 FC
+        beq     L80A1                           ; 8112 F0 8D
+        dec     $A8                             ; 8114 C6 A8
+        jmp     L80FD                           ; 8116 4C FD 80
+
+; ----------------------------------------------------------------------------
+L8119:  jsr     L0050                           ; 8119 20 50 00
+        bcs     L8109                           ; 811C B0 EB
+L811E:  beq     L812B                           ; 811E F0 0B
+        jsr     L0050                           ; 8120 20 50 00
+        sta     $A8                             ; 8123 85 A8
+        jsr     L0050                           ; 8125 20 50 00
+        tax                                     ; 8128 AA
+        bcs     L80FD                           ; 8129 B0 D2
+L812B:  rts                                     ; 812B 60
+
+; ----------------------------------------------------------------------------
+        .byte   $8C                             ; 812C 8C
+        .byte   $E2                             ; 812D E2
